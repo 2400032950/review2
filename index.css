@@ -1,0 +1,194 @@
+/* ===============================
+   Global Styles
+   =============================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f4f9ff;
+  color: #222;
+  padding: 20px;
+  transition: background 0.3s ease;
+}
+
+h1 {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 25px;
+  color: #1a1a1a;
+}
+
+/* ===============================
+   Tabs
+   =============================== */
+.tabs {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.tabs button {
+  background: #eaefff;
+  border: none;
+  padding: 10px 22px;
+  margin: 5px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tabs button:hover {
+  background: #d9e6ff;
+}
+
+.tabs button.active {
+  background: #1a73e8;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(26, 115, 232, 0.3);
+}
+
+/* ===============================
+   Layout
+   =============================== */
+.container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+/* ===============================
+   Card Styling
+   =============================== */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.card h2 {
+  font-size: 16px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+/* ===============================
+   Tables
+   =============================== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+th, td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid #eee;
+}
+
+th {
+  background: #f9fbff;
+  color: #333;
+  font-weight: 600;
+}
+
+td {
+  color: #444;
+}
+
+td a {
+  color: #1a73e8;
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+td a:hover {
+  text-decoration: underline;
+}
+
+/* ===============================
+   Status Updates
+   =============================== */
+.status-box {
+  background: #f4f9ff;
+  padding: 12px 15px;
+  border-radius: 10px;
+  margin-top: 10px;
+  font-size: 14px;
+  color: #333;
+  border-left: 4px solid #1a73e8;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* ===============================
+   Profile Section
+   =============================== */
+.profile {
+  text-align: center;
+}
+
+.profile img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: 12px;
+  border: 2px solid #1a73e8;
+}
+
+.profile h3 {
+  margin-bottom: 15px;
+  font-size: 18px;
+  color: #1a1a1a;
+}
+
+.profile-info {
+  text-align: left;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.profile-info p {
+  margin-bottom: 6px;
+}
+
+/* ===============================
+   Responsive Design
+   =============================== */
+@media (max-width: 900px) {
+  .container {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 15px;
+  }
+
+  .container {
+    grid-template-columns: 1fr;
+  }
+
+  .tabs button {
+    font-size: 12px;
+    padding: 8px 15px;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+  }
+}
