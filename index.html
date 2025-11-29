@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Scholarship Portal</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; background:#eef5ff; margin:0; }
+  header { background:#2b5797; color:#fff; padding:1rem; display:flex; justify-content:space-between; align-items:center; }
+  header h1 { margin:0; }
+  .top-buttons { display:flex; gap:10px; }
+  .top-buttons-left { display:flex; gap:10px; }
+  .top-buttons-right { display:flex; gap:10px; margin-left:auto; }
+  .top-buttons button { background:#fff; color:#2b5797; border:2px solid #2b5797; padding:8px 12px; border-radius:6px; cursor:pointer; font-weight:600; }
+  .container { width:90%; max-width:900px; margin:2rem auto; background:#fff; padding:2rem; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
+  .hidden { display:none; }
+  input, select { width:100%; padding:10px; margin:8px 0; border-radius:5px; border:1px solid #ccc; box-sizing:border-box; }
+  button.primary { background:#2b5797; color:#fff; padding:10px 20px; border:none; border-radius:6px; cursor:pointer; }
+  button.primary:hover { background:#1d3d6b; }
+  table { width:100%; border-collapse:collapse; margin-top:15px; }
+  th, td { padding:10px; border-bottom:1px solid #ccc; text-align:left; vertical-align:middle; }
+  .box { background:#e8f1ff; padding:15px; border-left:5px solid #2b5797; border-radius:6px; }
+  #profilePhoto { width:120px; height:120px; border-radius:10px; object-fit:cover; border:2px solid #2b5797; margin-bottom:10px; }
+  .small { font-size:0.9rem; color:#444; }
+  .app-card { padding:12px; border:1px solid #ddd; border-radius:8px; margin-bottom:12px; background:#fff; }
+  .app-card img { max-width:120px; display:block; margin-top:8px; border:1px solid #ccc; }
+  .action-btn { margin-right:8px; padding:8px 12px; border-radius:6px; cursor:pointer; border:none; color:white; }
+  .approve { background:#28a745; }
+  .reject { background:#dc3545; }
+  .nav-link { color:#2b5797; cursor:pointer; text-decoration:underline; }
+  .back-btn { background:#fff; color:#2b5797; border:2px solid #2b5797; padding:6px 10px; border-radius:6px; cursor:pointer; margin-right:8px; font-weight:600;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Scholarship Portal</h1>
+  <div class="top-buttons">
+    <div class="top-buttons-left" id="topButtonsLeft"></div>
+    <div class="top-buttons-right" id="topButtonsRight"></div>
+  </div>
+</header>
+
+<!-- LANDING -->
+<div id="landing" class="container">
+  <h2>Welcome to the Scholarship Portal</h2>
+  <p class="small">Apply for scholarships, upload your documents & track your status. Admins can review and update application statuses.</p>
+  <div class="box">
+    <h3>Instructions</h3>
+    <ul>
+      <li>Upload passport photo (jpg/png) and PDFs for documents.</li>
+      <li>Admin approvals/rejections update your application status.</li>
+      <li>After status updates you can view History, Dashboard & generate Report.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- STUDENT PAGES -->
+<div id="studentLogin" class="container hidden">
+  <h2>Student Login</h2>
+  <input id="stuLoginEmail" type="email" placeholder="Email">
+  <input id="stuLoginPass" type="password" placeholder="Password">
+  <button class="primary" onclick="studentLogin()">Login</button>
+  <p class="small">Don't have an account? <span class="nav-link" onclick="showStudentSignup()">Sign up</span></p>
+</div>
+
+<div id="studentSignup" class="container hidden">
+  <h2>Student Sign Up</h2>
+  <input id="stuName" type="text" placeholder="Full name">
+  <input id="stuEmail" type="email" placeholder="Email">
+  <input id="stuPass" type="password" placeholder="Password">
+  <button class="primary" onclick="studentSignup()">Sign Up</button>
+  <p class="small">Already registered? <span class="nav-link" onclick="showStudentLogin()">Login</span></p>
+</div>
+
+<div id="studentApply" class="container hidden">
+  <h2>Scholarship Application</h2>
+  <label>Scholarship Name</label>
+  <input id="stuScholarshipName" type="text" placeholder="Scholarship name">
+  <label>Passport Photo (JPG/PNG)</label>
+  <input id="stuPhoto" type="file" accept="image/jpeg,image/png" onchange="handlePhoto(event)">
+  <label>Aadhar (PDF)</label>
+  <input id="stuAadhar" type="file" accept="application/pdf">
+  <label>10th Memo (PDF)</label>
+  <input id="stu10th" type="file" accept="application/pdf">
+  <label>12th Memo (PDF)</label>
+  <input id="stu12th" type="file" accept="application/pdf">
+  <button class="primary" onclick="submitStudentApplication()">Submit Application</button>
+</div>
+
+<div id="studentStatus" class="container hidden">
+  <h2>Application Status</h2>
+  <div class="box">
+    <p><strong>Status:</strong> <span id="stuStatusText">No application submitted</span></p>
+    <p id="stuStatusExtra" class="small"></p>
+  </div>
+
+  <div style="margin-top:12px;">
+    <button id="historyBtn" class="primary" onclick="goToHistoryFromStatus()">Go to Scholarship History</button>
+    <button id="dashboardBtn" style="margin-left:8px;" onclick="openDashboard()">Go to Dashboard</button>
+  </div>
+</div>
+
+<div id="studentHistory" class="container hidden">
+  <h2>Scholarship History</h2>
+  <div class="box">
+    <p><strong>Total Scholarships Received:</strong> <span id="histCount">0</span></p>
+    <p><strong>Total Amount Received:</strong> ₹ <span id="histAmount">0</span></p>
+  </div>
+  <table id="histTable">
+    <thead><tr><th>Year</th><th>Scholarship</th><th>Amount</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <div style="margin-top:12px;">
+    <button class="primary" onclick="openDashboard()">Go to Dashboard</button>
+  </div>
+</div>
+
+<div id="studentDashboard" class="container hidden">
+  <h2>Dashboard</h2>
+  <img id="stuProfilePhoto" src="" alt="photo" class="hidden">
+  <p><strong>Name:</strong> <span id="stuDisplayName">-</span></p>
+  <p><strong>Email:</strong> <span id="stuDisplayEmail">-</span></p>
+  <h3>Your Applications</h3>
+  <table id="stuAppTable">
+    <thead><tr><th>Scholarship</th><th>Status</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <div style="margin-top:12px;">
+    <button class="primary" onclick="openReport()">Generate Report</button>
+  </div>
+</div>
+
+<div id="studentReport" class="container hidden">
+  <h2>Report</h2>
+  <div class="box">
+    <p><strong>Student:</strong> <span id="repName">-</span></p>
+    <p><strong>Total Scholarships:</strong> <span id="repCount">0</span></p>
+    <p><strong>Total Amount:</strong> ₹ <span id="repAmount">0</span></p>
+  </div>
+  <button class="primary" onclick="downloadReport()">Download PDF (placeholder)</button>
+  <button style="margin-left:8px;" onclick="openDashboard()">Back to Dashboard</button>
+</div>
+
+<!-- ADMIN PAGES -->
+<div id="adminLogin" class="container hidden">
+  <h2>Admin Login</h2>
+  <input id="admEmail" type="email" placeholder="Admin email">
+  <input id="admPass" type="password" placeholder="Password">
+  <button class="primary" onclick="adminLogin()">Login</button>
+  <p class="small">No admin account? <span class="nav-link" onclick="showAdminSignup()">Create one</span></p>
+</div>
+
+<div id="adminSignup" class="container hidden">
+  <h2>Admin Signup</h2>
+  <input id="admSignupEmail" type="email" placeholder="Admin email">
+  <input id="admSignupPass" type="password" placeholder="Password">
+  <button class="primary" onclick="adminSignup()">Create Admin Account</button>
+  <p class="small"><span class="nav-link" onclick="showAdminLogin()">Back to Login</span></p>
+</div>
+
+<div id="adminDashboard" class="container hidden">
+  <h2>Admin - Review Applications</h2>
+  <div id="adminAppContainer"></div>
+</div>
+
+<script>
+/* ------------------------- STORAGE ------------------------- */
+let students = [], admin = null, applications = [], currentPhoto = '', _currentStudentEmail = '', _pageHistory = [];
+
+/* ------------------------- UTILS ------------------------- */
+function hideAll(){ document.querySelectorAll('.container').forEach(c=>c.classList.add('hidden')); }
+
+function updateTopButtons(type){
+  const left=document.getElementById('topButtonsLeft'), right=document.getElementById('topButtonsRight');
+  left.innerHTML=''; right.innerHTML='';
+  if(type==='landing'){ left.innerHTML=`<button onclick="openStudentPortal()">Student Portal</button><button onclick="openAdminPortal()">Admin Portal</button>`; }
+  else if(type==='student'||type==='admin'){ left.innerHTML=`<button class="back-btn" onclick="goBack()">← Back</button>`; right.innerHTML=`<button onclick="logout()">Logout</button>`; }
+}
+
+function pushPage(page){ _pageHistory.push(page); }
+function goBack(){ if(_pageHistory.length>1){ _pageHistory.pop(); const prev=_pageHistory[_pageHistory.length-1]; prev(); } else logout(); }
+function logout(){ hideAll(); document.getElementById('landing').classList.remove('hidden'); updateTopButtons('landing'); _pageHistory=[]; }
+
+/* ------------------------- STUDENT ------------------------- */
+function openStudentPortal(){ hideAll(); document.getElementById('studentLogin').classList.remove('hidden'); updateTopButtons('landing'); pushPage(openStudentPortal); }
+function showStudentSignup(){ hideAll(); document.getElementById('studentSignup').classList.remove('hidden'); updateTopButtons('landing'); pushPage(showStudentSignup); }
+function showStudentLogin(){ hideAll(); document.getElementById('studentLogin').classList.remove('hidden'); updateTopButtons('landing'); pushPage(showStudentLogin); }
+
+function studentSignup(){
+  const name=document.getElementById('stuName').value.trim();
+  const email=document.getElementById('stuEmail').value.trim();
+  const pass=document.getElementById('stuPass').value;
+  if(!name||!email||!pass){alert('Fill all fields'); return;}
+  if(students.find(s=>s.email===email)){alert('Email already registered'); return;}
+  students.push({name,email,pass});
+  document.getElementById('stuDisplayName').innerText=name;
+  document.getElementById('stuDisplayEmail').innerText=email;
+  hideAll(); document.getElementById('studentApply').classList.remove('hidden'); updateTopButtons('student'); pushPage(studentSignup);
+}
+
+function studentLogin(){
+  const email=document.getElementById('stuLoginEmail').value.trim();
+  const pass=document.getElementById('stuLoginPass').value;
+  const s=students.find(st=>st.email===email && st.pass===pass);
+  if(!s){alert('Invalid credentials'); return;}
+  document.getElementById('stuDisplayName').innerText=s.name;
+  document.getElementById('stuDisplayEmail').innerText=s.email;
+  hideAll(); document.getElementById('studentStatus').classList.remove('hidden'); updateTopButtons('student'); pushPage(studentLogin);
+  refreshStudentStatus(email);
+}
+
+/* ------------------------- PHOTO & APPLICATION ------------------------- */
+function handlePhoto(ev){ const f=ev.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=e=>currentPhoto=e.target.result; r.readAsDataURL(f); }
+function submitStudentApplication(){
+  const scholarship=document.getElementById('stuScholarshipName').value.trim();
+  const name=document.getElementById('stuDisplayName').innerText;
+  const email=document.getElementById('stuDisplayEmail').innerText;
+  if(!scholarship||!name||!email){alert('Fill all fields'); return;}
+  const id=Date.now();
+  applications.push({
+    id,name,email,scholarship, photo:currentPhoto,
+    aadharFileName:document.getElementById('stuAadhar').files[0]?.name||'',
+    tenthFileName:document.getElementById('stu10th').files[0]?.name||'',
+    twelfthFileName:document.getElementById('stu12th').files[0]?.name||'',
+    status:'Pending', adminMessage:''
+  });
+  currentPhoto=''; alert('Application submitted!');
+  hideAll(); document.getElementById('studentStatus').classList.remove('hidden'); refreshStudentStatus(email);
+  pushPage(submitStudentApplication);
+}
+
+/* ------------------------- UPDATED STATUS LOGIC (IMPORTANT) ------------------------- */
+function refreshStudentStatus(email){
+  const apps = applications
+    .filter(a => a.email === email)
+    .sort((a, b) => b.id - a.id);
+
+  const statusText = document.getElementById("stuStatusText");
+  const statusExtra = document.getElementById("stuStatusExtra");
+
+  const historyBtn = document.getElementById("historyBtn");
+  const dashboardBtn = document.getElementById("dashboardBtn");
+
+  if (!apps.length) {
+    statusText.innerText = "No application submitted";
+    statusExtra.innerText = "";
+    historyBtn.style.display = "none";
+    dashboardBtn.style.display = "none";
+    return;
+  }
+
+  const latest = apps[0];
+
+  statusText.innerText = latest.status;
+  statusExtra.innerText =
+    latest.adminMessage ||
+    (latest.status === "Pending" ? "Your application is under review." : "");
+
+  _currentStudentEmail = email;
+
+  // ------- SHOW / HIDE BUTTONS BASED ON STATUS -------
+  if (latest.status === "Approved") {
+    historyBtn.style.display = "inline-block";
+    dashboardBtn.style.display = "inline-block";
+  } else {
+    historyBtn.style.display = "none";
+    dashboardBtn.style.display = "none";
+  }
+}
+
+/* ------------------------- STUDENT NAVIGATION ------------------------- */
+function goToHistoryFromStatus(){ populateHistory(_currentStudentEmail); hideAll(); document.getElementById('studentHistory').classList.remove('hidden'); pushPage(goToHistoryFromStatus); }
+
+function populateHistory(email){
+  const tbody=document.querySelector('#histTable tbody'); tbody.innerHTML='';
+  const apps=applications.filter(a=>a.email===email && a.status==='Approved'); let total=0;
+  apps.forEach(a=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${a.year||new Date().getFullYear()}</td><td>${a.scholarship}</td><td>₹ ${a.amount||10000}</td>`; tbody.appendChild(tr); total+=a.amount||10000; });
+  document.getElementById('histCount').innerText=apps.length; document.getElementById('histAmount').innerText=total;
+}
+
+function openDashboard(){
+  populateStudentApps(_currentStudentEmail);
+  hideAll(); document.getElementById('studentDashboard').classList.remove('hidden'); updateTopButtons('student'); pushPage(openDashboard);
+}
+
+function populateStudentApps(email){
+  const tbody=document.querySelector('#stuAppTable tbody'); tbody.innerHTML='';
+  const apps=applications.filter(a=>a.email===email);
+  if(!apps.length){ tbody.innerHTML='<tr><td colspan="2">No applications yet</td></tr>'; }
+  else apps.forEach(a=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${a.scholarship}</td><td>${a.status}</td>`; tbody.appendChild(tr); });
+  const last=apps[apps.length-1]; if(last && last.photo){ const img=document.getElementById('stuProfilePhoto'); img.src=last.photo; img.classList.remove('hidden'); }
+}
+
+function openReport(){
+  const apps=applications.filter(a=>a.email===_currentStudentEmail && a.status==='Approved');
+  let total=0; apps.forEach(a=>total+=a.amount||10000);
+  document.getElementById('repName').innerText=document.getElementById('stuDisplayName').innerText;
+  document.getElementById('repCount').innerText=apps.length;
+  document.getElementById('repAmount').innerText=total;
+  hideAll(); document.getElementById('studentReport').classList.remove('hidden'); updateTopButtons('student'); pushPage(openReport);
+}
+
+function downloadReport(){ alert('Report download placeholder'); }
+
+/* ------------------------- ADMIN ------------------------- */
+function openAdminPortal(){ hideAll(); document.getElementById('adminLogin').classList.remove('hidden'); updateTopButtons('landing'); pushPage(openAdminPortal); }
+function showAdminSignup(){ hideAll(); document.getElementById('adminSignup').classList.remove('hidden'); updateTopButtons('landing'); pushPage(showAdminSignup); }
+function showAdminLogin(){ hideAll(); document.getElementById('adminLogin').classList.remove('hidden'); updateTopButtons('landing'); pushPage(showAdminLogin); }
+
+function adminSignup(){
+  const email=document.getElementById('admSignupEmail').value.trim(); const pass=document.getElementById('admSignupPass').value;
+  if(!email||!pass){alert('Fill admin fields'); return;}
+  admin={email,pass}; alert('Admin created — now login'); showAdminLogin();
+}
+
+function adminLogin(){
+  const email=document.getElementById('admEmail').value.trim(); const pass=document.getElementById('admPass').value;
+  if(!admin || admin.email!==email || admin.pass!==pass){alert('Invalid admin'); return;}
+  loadAdminDashboard(); hideAll(); document.getElementById('adminDashboard').classList.remove('hidden'); updateTopButtons('admin'); pushPage(adminLogin);
+}
+
+function loadAdminDashboard(){
+  const container=document.getElementById('adminAppContainer'); container.innerHTML='';
+  if(!applications.length){ container.innerHTML='<p class="small">No applications submitted yet.</p>'; return; }
+  [...applications].reverse().forEach(app=>{
+    const div=document.createElement('div'); div.className='app-card';
+    div.innerHTML=`<p><strong>Name:</strong> ${app.name}</p><p><strong>Email:</strong> ${app.email}</p><p><strong>Scholarship:</strong> ${app.scholarship}</p><p><strong>Status:</strong> ${app.status}</p>${app.photo?`<img src="${app.photo}" alt="photo">`:''}<p class="small">Files: ${app.aadharFileName||'-'}, ${app.tenthFileName||'-'}, ${app.twelfthFileName||'-'}</p><div style="margin-top:8px;"><button class="action-btn approve" onclick="adminApprove(${app.id})">Approve</button><button class="action-btn reject" onclick="adminReject(${app.id})">Reject</button><button style="margin-left:8px;" onclick="viewAppDetails(${app.id})">View</button></div>`;
+    container.appendChild(div);
+  });
+}
+
+function adminApprove(id){ const app=applications.find(a=>a.id===id); if(!app) return alert('Not found'); app.status='Approved'; app.adminMessage='Approved by admin'; app.amount=app.amount||10000; app.year=app.year||new Date().getFullYear(); alert('Approved'); loadAdminDashboard(); if(_currentStudentEmail===app.email) refreshStudentStatus(app.email); }
+function adminReject(id){ const app=applications.find(a=>a.id===id); if(!app) return alert('Not found'); app.status='Rejected'; app.adminMessage='Rejected by admin'; alert('Rejected'); loadAdminDashboard(); if(_currentStudentEmail===app.email) refreshStudentStatus(app.email); }
+function viewAppDetails(id){ const app=applications.find(a=>a.id===id); if(!app) return alert('Not found'); alert(`Application Details:\nName: ${app.name}\nEmail: ${app.email}\nScholarship: ${app.scholarship}\nStatus: ${app.status}`); }
+
+/* ------------------------- INIT ------------------------- */
+(function init(){ hideAll(); document.getElementById('landing').classList.remove('hidden'); updateTopButtons('landing'); })();
+</script>
+
+</body>
+</html>
